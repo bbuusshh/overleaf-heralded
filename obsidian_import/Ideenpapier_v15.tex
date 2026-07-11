@@ -1,0 +1,339 @@
+\documentclass[11pt,oneside]{scrartcl}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{csquotes}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+\renewcommand{\arraystretch}{1.15}
+\setlist[itemize]{leftmargin=1.5em}
+
+\title{Anlage I.2a: Projektbeschreibung (Ideenpapier), v15}
+\author{Heralded}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{TODO}
+\begin{itemize}
+  \item J\"org als VIP des Feldes und sein einzigartiges Netzwerk
+  \item ZAQ als einzigartiger Ort, um den Forschungstransfer erfolgreich umzusetzen
+  \item FTO-Analyse als separate Datei
+  \item Warum Telekom nicht einfach das tun kann, was wir tun; warum Single-Link-Kommunikation der falsche Weg ist und warum es nicht skalierbar ist
+  \item Erw\"ahnung von QRN, Spiniton und anderen Ans\"atzen
+  \item Diamond als einzigartiger Wettbewerbsvorteil
+  \item Pain Point f\"ur Telekom: Sie k\"onnen unsere Switche kaufen wie bei Cisco
+  \item Zeit und Geld als Pain Points
+  \item USP nicht klar genug
+  \item Zusammenfassung des Nicht-Technik-Wettbewerbs
+  \item Patentstrategie
+  \item Team genauer beschreiben
+  \item Nachhaltigkeit: Diagramme und Visualisierungen
+  \item Fraud Detection
+  \item Explainability
+  \item Robuste und schnelle Bereitstellung
+  \item Cloud-Version f\"ur Nutzer, um unsere Hardware kennenzulernen, bevor sie kaufen
+\end{itemize}
+
+\tableofcontents
+\clearpage
+
+\section{Zusammenfassung}
+Quantencomputing und Quantenkommunikation stehen vor demselben Engpass. Es fehlen praktisch einsetzbare Quantenknoten, die Quanteninformation speichern, lokal verarbeiten und \"uber Licht zwischen entfernten Systemen austauschen k\"onnen. Diese Hardware ist eine Voraussetzung f\"ur verteilte Quantenprozessoren, speicherunterst\"utzte Quantennetze und langfristig quantensichere Kommunikation. Der unmittelbare Bedarf entsteht jedoch schon heute in Forschungslaboren, Testbeds und bei Quantenhardware-Entwicklern. Sie wollen speicherunterst\"utzte Netzwerkprotokolle validieren, m\"ussen daf\"ur aber bislang Einzelkomponenten selbst integrieren, kalibrieren und stabil betreiben.
+
+Genau hier setzt Heralded an. Wir entwickeln die technologische Grundlage einer Quantum Network Processing Unit (QNPU) als reproduzierbares, fasergekoppeltes Register- und Schnittstellenmodul, das ein station\"ares Quantenregister und einen langlebigen Quantenspeicher mit einer optischen Schnittstelle vereint. Der erste verwertbare Produktpfad ist ein Pilot-QNPU-Modul f\"ur Forschungsinstitute und Quantenhardware-Entwickler, das in vorhandene Kryo-, Optik- und Steuerelektronik-Infrastruktur integriert wird und den Eigenbau-, Kalibrier- und Integrationsaufwand deutlich reduziert.
+
+In EXIST-F\"orderphase I konzentrieren wir uns auf den transferrelevanten Kern dieser Architektur. Dazu geh\"oren ein reproduzierbares Register- und Schnittstellenmodul auf Chip-Ebene, validierte Speicherfunktion, optische Schnittstelle, kryogene Integration und die Spezifikation des ersten Pilotprodukts. Der serienreife 19-Zoll-Netzwerkknoten, kommerzielle Mehrknoten-Infrastruktur und wiederkehrende Netzwerkdienste sind nachgelagerte Produktisierungs- und Skalierungsstufen nach Proof of Concept, Pilotkundenfeedback und Anschlussfinanzierung.
+
+M\"oglich wird die QNPU durch inversionssymmetrische Gruppe-IV-Farbzentren in Diamant (SnV, PbV), eine zum Patent angemeldete Implantations- und Verspannungstechnik und den Betrieb bei einfach erreichbaren Fl\"ussigheliumtemperaturen statt im Millikelvin-Bereich. Damit verbinden wir die physikalischen Vorteile langlebiger Festk\"orper-Quantenspeicher mit einer Modularchitektur, die perspektivisch in reale Testbed- und Netzwerkinfrastruktur \"uberf\"uhrt werden kann.
+
+\section{Gesch\"aftsidee}
+Wir entwickeln zug\"angliche und skalierbare QNPU-Hardware und erm\"oglichen damit perspektivisch zwei Fortschritte zugleich. Zum einen verbindet sie Quantencomputersysteme \"uber Licht, zum anderen unterst\"utzt sie Quantenkommunikation \"uber gro\ss e Distanzen. Der Phase-I-Fokus liegt nicht auf einem serienreifen Netzwerkknoten, sondern auf einem reproduzierbaren Register- und Schnittstellenmodul, das die kritischen Bausteine eines solchen Knotens validiert.
+
+Der erste kommerzielle Einstieg nach erfolgreicher Phase-I-Validierung ist ein Pilot-QNPU-Modul f\"ur technisch versierte Forschungskunden. Es besteht aus einem fasergekoppelten Diamant-Registermodul mit definierter optischer Schnittstelle, MW/RF- und DC-Anbindung, Kalibrier- und Steuerroutinen sowie Integrationsunterst\"utzung. Der Kunde kann damit Protokolle, Schnittstellen und Speicherfunktionen in vorhandener Infrastruktur validieren, ohne den gesamten Netzwerk-Stack selbst aus Einzelkomponenten aufzubauen.
+
+Der Engpass, den wir adressieren, ist das Fehlen praktisch einsetzbarer Hardware f\"ur Quantennetze und die daraus folgende Skalierungsgrenze des Quantencomputings. Effiziente Schnittstellen zwischen Qubits und Photonen fehlen, um Quanteninformation \"uber Chips, Ger\"ate und Kommunikationskan\"ale hinweg zu transportieren. Vom Stand der Technik unterscheiden wir uns vor allem durch unsere zum Patent angemeldete Hardwarearchitektur.
+
+\subsection{Ausgangsproblem / Bedarf}
+Quantentechnologien n\"ahern sich einem kritischen \"Ubergangspunkt. Quantencomputing entwickelt sich von isolierten Labordemonstratoren hin zu gr\"o\ss eren, anwendungsorientierten Systemen, w\"ahrend Quantenkommunikation strategisch relevant wird, sowohl f\"ur den Schutz langfristig vertraulicher Daten als auch f\"ur digitale Souvera\"nit\"at. Beide Entwicklungen erzeugen denselben Hardware-Bedarf an skalierbaren Quantenknoten, die Quanteninformation \"uber optische Verbindungen speichern, verarbeiten und austauschen k\"onnen.
+
+F\"ur den Erstmarkt ist der Bedarf noch konkreter. Forschungsgruppen, Testbed-Betreiber und Quantenhardware-Entwickler k\"onnen speicherunterst\"utzte Netzwerkprotokolle heute meist nur mit selbst aufgebauten Einzelkomponenten testen. Das bindet Monate an Integrations-, Kalibrier- und Fehlersuchaufwand, erschwert reproduzierbare Vergleichsmessungen und verz\"ogert die Spezifikation k\"unftiger Schnittstellen. Genau diese L\"ucke adressiert das Pilot-QNPU-Modul.
+
+Gleichzeitig steht sichere Kommunikation vor einer wachsenden Langzeitbedrohung durch k\"unftige kryptographisch relevante Quantencomputer. Viele heute genutzte Public-Key-Verfahren sind gegen\"uber hinreichend leistungsf\"ahigen Quantenalgorithmen grunds\"atzlich angreifbar. Daraus entsteht das Harvest-now,-decrypt-later-Risiko. Besonders kritisch ist das f\"ur Regierungs-, Finanz-, Industrie-, Medizin- und Infrastrukturdaten, die viele Jahre vertraulich bleiben m\"ussen.
+
+\subsection{L\"osungsidee}
+Unser Entwicklungsziel ist eine modulare Quantum Network Processing Unit (QNPU). In Phase I validieren wir daf\"ur ein integrationsf\"ahiges Register- und Schnittstellenmodul, das ein Quantenregister aus Farbzentren in Diamant, optische Schnittstellen, Steuersoftware, Kalibrierungsroutinen und technische Integrationsunterst\"utzung vereint und sich in bestehende oder gemeinsam spezifizierte kryogene, optische und elektronische Infrastruktur einf\"ugt.
+
+Die geplante Kernfunktion ist die Verbindung station\"arer Quantenregister \"uber Photonen. Die Spezifikation des Phase-I-Pilotmoduls wird prim\"ar durch speicherunterst\"utzte Quantennetzwerk-Testbeds definiert; verteiltes Quantencomputing ist ein daraus abgeleiteter sp\"aterer Anwendungsfall. In der Quantenkommunikation kann dasselbe Prinzip Verschr\"ankung zwischen entfernten Knoten erzeugen und die Basis k\"unftiger Quantenrepeaternetzwerke bilden.
+
+Das zentrale Differenzierungsmerkmal ist die integrierte Knotenarchitektur, die optisch adressierbare Diamant-Register, langlebige Speicher-Qubits und w\"armelastarme Quantenkontrolle in einem modularen, optisch vernetzbaren Modul mit definierten Schnittstellen zusammenf\"uhrt. Statt einen kompletten Netzwerk-Stack aus Einzelkomponenten aufzubauen, erhalten Kunden ein integriertes Modul samt Software und Integrationsunterst\"utzung.
+
+\begin{figure}[ht]
+  \centering
+  \fbox{\parbox[c][4cm][c]{0.8\textwidth}{\centering Platzhalter f\"ur Abbildung: QNPU-Architektur\\[0.3em] qnpu\_architektur.svg}}
+  \caption{Schematischer Aufbau der QNPU und Vernetzung zu weiteren Knoten}
+\end{figure}
+
+\subsection{Zielkunden und Anwendungsszenarien}
+Statt der gesamten Quantenbranche adressieren wir einen klar umrissenen Erstmarkt. Kunde Nummer 1 sind europ\"aische Forschungsinstitute und Quantenhardware-Entwickler, die speicherunterst\"utzte Quantennetzwerke experimentell validieren wollen. Typische Anwendungsf\"alle sind der Test speicherunterst\"utzter Netzwerkprotokolle, die Validierung optischer Interconnects und das Benchmarking diamantbasierter Register.
+
+In der zweiten Phase erweitern wir den Kreis auf Telekommunikations- und Netzbetreiber sowie sicherheitskritische Ankerkunden im \"offentlichen Sektor. Ein anschauliches Anwendungsszenario ist die quantensichere Kommunikation zwischen einem Kunden in Karlsruhe und einem Kunden in Ulm. Ein QNPU-basierter Repeaterknoten an einem Zwischenstandort wie Stuttgart k\"onnte k\"unftig Verschr\"ankung zwischen beiden Endpunkten herstellen, ohne dass der Betreiber des Zwischenknotens Zugriff auf das Schl\"usselmaterial der Endnutzer erh\"alt.
+
+\subsection{Wertversprechen / Kundennutzen}
+Der zentrale Kundennutzen der QNPU ist ein modularer Hardwarebaustein f\"ur Quantennetze, der sichere Kommunikation, optische Vernetzung und k\"unftiges verteiltes Quantencomputing in einer Plattform vereint. F\"ur den Erstkunden z\"ahlt vor allem die Reduktion von Komplexit\"at und Zeit. Forschungslabore gewinnen Monate an Integrationszeit und erhalten reproduzierbare Messbedingungen; Testbed-Betreiber erhalten eine definierte Schnittstelle statt eines Einzelaufbaus.
+
+Ein zentraler Vorteil ist die Kompatibilit\"at mit kryogenen Umgebungen im Bereich von Fl\"ussigheliumtemperaturen. Gegen\"uber dem Millikelvin-Betrieb reduziert dies Infrastrukturkosten, K\"uhlkomplexit\"at und Betriebsaufwand deutlich.
+
+\subsection{Kommerzialisierungsidee}
+Unsere Kommerzialisierung folgt einem gestuften Ansatz von spezialisierten Komponenten hin zur integrierten Netzwerkinfrastruktur.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.22\textwidth} X X X X}
+\toprule
+Stufe & Zeitraum & Zielkunde & Lieferumfang & Indikativer Preisrahmen \\
+\midrule
+Enabling-Komponenten & Jahr 1 bis 2 & Quantenoptik- und Festk\"orper-Qubit-Labore & implantierte/nanofabrizierte Diamantstrukturen, photonische Koppelelemente, spezialisierte MW-/RF-Strukturen & 10 bis 50 k\texteuro \\
+Pilot-QNPU-Modul & Jahr 2 bis 4 & Forschungsinstitute, Testbed-Betreiber, Quantenhardware-Entwickler & fasergekoppeltes Registermodul mit optischer Schnittstelle, Steuer-/Kalibrierroutinen und Integrationssupport & 300 bis 800 k\texteuro \\
+Standardisierter Netzwerkknoten & Jahr 4+ & Testbed-Betreiber, Telekom-/Sicherheitskunden, Infrastrukturpartner & rack-integrierter Knoten mit standardisierten Schnittstellen, Service- und Upgrade-Pfad & rund 2 Mio. \texteuro \\
+\bottomrule
+\end{tabularx}
+\caption{Gestufte Kommerzialisierung der QNPU}
+\end{table}
+
+\subsection{Vision der Gr\"undung und Investitionsperspektive}
+Unsere Vision ist ein Unternehmen, das die Hardwareknoten eines k\"unftigen Quanteninternets bereitstellt. Rack-integrierte Quantennetzwerkknoten sollen Organisationen die Anbindung an ein gr\"o\ss eres glasfaserbasiertes Quantennetzwerk erm\"oglichen. Seed-finanzierbar wird das Unternehmen, wenn bis Ende Phase I drei Nachweise vorliegen: ein reproduzierbares Register-/Schnittstellenmodul mit validierter Speicherfunktion, ein lizenzierter oder verbindlich vorbereiteter IP-/FTO-Pfad und qualifizierte LOIs oder Pilotvereinbarungen mit klarer Use-Case-, Timing- und Budgetlogik.
+
+\section{Team}
+Das Kern-Know-how unseres Teams wurzelt in mehrj\"ahriger angewandter Arbeit an Farbzentren in Diamant. Wir vereinen darin Kompetenzen, die zusammen selten sind. Dazu geh\"oren die Erzeugung von Gruppe-IV-Defekten mit exzellenten Spin-Photon-Eigenschaften, die Entwicklung optischer, kryogener und elektronischer Subsysteme, ein belegter Track Record in der Entwicklung kommerzieller Quantenmikroskope und -computer, das Design supraleitender Mikrowellensteuerungen sowie die Fabrikation und elektrische Abstimmung von Gruppe-IV-Defekten in Nanostrukturen.
+
+Das Gr\"undungsteam besteht aus drei wissenschaftlich-technischen Know-how-Tr\"agern und einer dezidierten betriebswirtschaftlichen Kraft.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.2\textwidth} >{\raggedright\arraybackslash}p{0.24\textwidth} X X}
+\toprule
+Name & Rolle & Förderkategorie & Kernkompetenz \\
+\midrule
+Sreehari Jayaram & Fabrikation \& Integration & wiss.-techn. (PhD) & Nanofabrikation, Kryo-Instrumentierung, Produktentwicklung \\
+Vladislav Bushmakin & Quantenoptik / Spin-Photon-Interface & wiss.-techn. (PhD) & SnV-Quantenoptik, Zwei-Photonen-Interferenz, Koh\"arenz \\
+Dr. Ioannis Karapatzakis & Engineering / MW \& Kryotechnik & wiss.-techn. (PhD) & Supraleitende RF/MW-Kontrolle, Kryotechnik, Cleanroom \\
+Christian Hug & Gesch\"aftsf\"uhrung / Business (+ IT) & betriebswirtschaftlich (M.Sc.) & Entrepreneurship, Finance, Go-to-Market, IT/Cloud \\
+\bottomrule
+\end{tabularx}
+\caption{Kernteam der Gr\"undung}
+\end{table}
+
+Das Vorhaben ist eine Ausgr\"undung aus der Wrachtrup-Gruppe der Universit\"at Stuttgart und damit eng an ein etabliertes wissenschaftliches Umfeld angebunden. Eingebettet ist es in ein starkes Netzwerk aus der Wrachtrup-Gruppe, ZAQuant, dem Physikalischen Institut des KIT und dem Verbundprojekt QuantumRepeater.Net (QR.N). Als akademischer Mentor sichert Prof. Dr. J\"org Wrachtrup die unentgeltliche Nutzung der universitaren Infrastruktur \"uber die gesamte Projektlaufzeit zu.
+
+\section{Innovationsvorhaben}
+\subsection{Gr\"undungsvorgeschichte und Entwicklungsstand}
+Unser Vorhaben baut direkt auf mehrj\"ahrigen wissenschaftlich-technologischen Vorarbeiten zu diamantbasierten Spin-Photon-Interfaces, koh\"arenter Spin-Kontrolle, Nanofabrikation und kryogener Quantenhardware-Integration auf. Bereits demonstriert sind die wesentlichen Proof-of-Principle-Bausteine einer speicherunterst\"utzten QNPU. Dazu geh\"oren deterministische Verspannung von Diamantmembranen, koh\"arente Mikrowellenkontrolle von Gruppe-IV-Farbzentren, Dynamical Decoupling von Elektronenspins, die Kopplung an lokale Kernspin-Speicher und w\"armelastarme MW/RF-Steuerkonzepte f\"ur den kryogenen Betrieb.
+
+Zwei begutachtete Ver\"offentlichungen belegen den Kern dieser Vorarbeiten. In Physical Review X 14, 031036 (2024) zeigten wir die deterministische Verspannung von Diamantmembranen und die Mikrowellenkontrolle von SnV mit supraleitenden Strukturen; in Physical Review X 16, 011060 (2026) gelang die koh\"arente Kontrolle eines stark gekoppelten Kernspins. Weitere Arbeiten sind zu Heizeffekten supraleitender Wellenleiter, Zwei-Photonen-Interferenz, skalierbarer Defektfabrikation und spektraler Rekonfiguration in Vorbereitung.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.25\textwidth} X X X}
+\toprule
+Vorarbeit / Evidenz & Belegt heute & Belegt noch nicht & Relevanz f\"ur Phase I \\
+\midrule
+Deterministische Verspannung und MW-Kontrolle von SnV & Kontrolle, Materialverst\"andnis, koh\"arente Spinmanipulation & reproduzierbares Registermodul mit Faser-, MW/RF- und DC-Integration & reduziert Risiko bei Materialplattform, Kontrolle und Packaging \\
+Koh\"arente Kontrolle eines gekoppelten Kernspins & Speicherprinzip und w\"armelastarme Steuerung & Reset/Reuse des Elektronenspins im integrierten Modul & reduziert Risiko bei Quantenspeicher und Sequenzbetrieb \\
+Stark-Tuning und spektrale Rekonfiguration & elektrische Abstimmung ohne beobachtete Linienverbreiterung & Transfer in nanostrukturierte, fasergekoppelte Modularchitektur & reduziert Risiko bei Multiplexing und Emitteranpassung \\
+\bottomrule
+\end{tabularx}
+\caption{Entwicklungsstand und Relevanz f\"ur Phase I}
+\end{table}
+
+\subsection{Innovation}
+Unsere Kerninnovation liegt nicht in einem isolierten Materialeffekt, sondern in der reproduzierbaren Systemintegration eines speicherunterst\"utzten, fasergekoppelten Festk\"orper-Quantennetzwerkknotens bei praktikabler Kryotechnik. Schutz- und wertstiftend sind insbesondere die Kombination aus spektraler Rekonfiguration, w\"armelastarmer Kontrolle und reproduzierbarer Modularchitektur.
+
+Technisch integriert die QNPU mehrere Enabling-Technologien in eine reproduzierbare Architektur. Sie verbindet Gruppe-IV-Spin-Photon-Interfaces, lokale Kernspin-Quantenspeicher, GHz-schnelle spektrale Rekonfiguration, faser-gekoppelten optischen Zugang, w\"armelastarme MW/RF-Kontrolle und kryogene PCB-Verpackung in einem Modul auf Chip-Ebene.
+
+Der Stand der Technik zeigt jeweils charakteristische Schw\"achen.\par
+\begin{table}[ht]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.22\textwidth} X}
+\toprule
+Plattform & Schw\"ache \\
+\midrule
+NV-Zentren & Niedriger Debye-Waller-Faktor, geringe Photonenunterscheidbarkeit, niedrige photonenvermittelte Verschr\"ankungsraten \\
+SiV-Zentren & Lange Spin-Koh\"arenz oft nur bei Millikelvin; effizientes Networking \"uber anspruchsvolle Nanokavitäten \\
+Supraleitende Qubits & Millikelvin-K\"uhlung; schwierige Mikrowelle-zu-Optik-Transduktion \\
+Trapped Ions / Neutrale Atome & Komplexe Vakuum-/Laserinfrastruktur \\
+\bottomrule
+\end{tabularx}
+\caption{Stand der Technik und Schw\"achen ausgew\"ahlter Plattformen}
+\end{table}
+
+\subsection{IP-Situation}
+Unsere IP-Strategie sch\"utzt die spezifischen Integrationsmechanismen, die einzelne Gruppe-IV-Komponenten in ein reproduzierbares QNPU-Modul \"uberf\"uhren. Im Zentrum stehen drei Schwerpunkte: lokale spektrale Rekonfiguration, w\"armelastarme Spin-Kontroll-Integration und reproduzierbare Modularchitektur. Als konkrete Patentrichtungen kommen Methoden in Betracht, die Diamant und G4-Nanostrukturen mit Glas und Planarisierung kombinieren, vergrabene Elektroden mit Mikrowellen oder Flip-Chip auf DC/MW-Strukturen erweitern oder zu einer Schichtarchitektur ausbauen.
+
+Die zugrundeliegenden Erfindungen sind im Rahmen der Forschungst\"atigkeit an der Universit\"at Stuttgart entstanden. Das Gr\"undungsteam steht mit dem IP-Center bzw. Technologietransfer der Universit\"at Stuttgart in Gespr\"achen \"uber die Lizenzierung relevanter Schutzrechte.
+
+\subsection{FuE-Konzept}
+Unser prim\"ares Ziel in Phase I ist die Integration der Kernbausteine eines speicherunterst\"utzten Gruppe-IV-Diamant-QNPU in ein reproduzierbares Registermodul auf Chip-Ebene und dessen Validierung in einem Systemexperiment. Das Modul vereint einen nanostrukturierten Diamantchip, optischen Faserzugang, lokale Stark-Elektroden, MW/RF-Steuerstrukturen, kryogene PCB-Verpackung sowie Kalibrier- und Steuerroutinen.
+
+Die Arbeitspakete gliedern sich in f\"unf Bereiche:
+\begin{enumerate}
+  \item Materialplattform und Nanostruktur-Integration mit SnV als Startsystem und PbV parallel als 4-K-Route.
+  \item Lokale spektrale Rekonfiguration durch Transfer des Stark-Tunings vom Bulk in Nanostrukturen.
+  \item Koh\"arente Elektron- und Kernspin-Kontrolle mit optisch aktivem Elektronenspin und mindestens einem lokalen Kernspin-Speicher.
+  \item W\"armelastarme MW/RF- und PCB-Integration \"uber eine reproduzierbare kryogene PCB-Architektur.
+  \item Systemvalidierung in der Infrastruktur des Gastinstituts.
+\end{enumerate}
+
+\section{Nachhaltigkeit}
+Unsere Technologie zahlt als Hardware-Enabler prim\"ar auf drei Nachhaltigkeitsziele (SDGs) der Vereinten Nationen ein. Der wichtigste Hebel liegt dabei in der massiven Reduktion der physikalischen Infrastrukturkomplexit\"at gegen\"uber bisherigen Ans\"atzen.
+
+Zu SDG 13 (Klimaschutz) und SDG 7 (Saubere Energie) erfordert bisherige Quanten-Plattformen Millikelvin-Mischungskryostate mit hoher Leistung. Unsere Gruppe-IV-Strategie erm\"oglicht den Betrieb bei etwa 4 Kelvin in kompakten Closed-Cycle-Systemen. Dies senkt den Energiebedarf und damit den CO2-Fu\ss abdruck z\"ukunftiger Quantennetze deutlich.
+
+Zu SDG 12 (Nachhaltiger Konsum und Produktion) eliminiert unsere Plattform die Abh\"angigkeit von Helium-3 zugunsten von geschlossen zirkulierendem Standard-Helium-4. Zudem verl\"angert unser modularer Skalierungsansatz die Lebensdauer installierter Hardware. Statt \"uberdimensionierte Knoten bei Upgrades komplett auszutauschen, k\"onnen bestehende Netze einfach um weitere QNPU-Module erg\"anzt werden.
+
+Zu SDG 9 (Industrie, Innovation, Infrastruktur) ist die QNPU ein Schl\"usselbaustein f\"ur speicherunterst\"utzte Quantenkommunikationsnetze. Sie bildet die Hardware-Basis, um kritische Infrastrukturen und souver\"ane digitale Systeme künftig physikalisch vor Hackerangriffen zu sch\"utzen.
+
+\section{Markt und Wettbewerb}
+\subsection{Marktsituation}
+Unsere Beachhead-These konzentriert sich auf europ\"aische Forschungsinstitute und Quantenhardware-Entwickler als erste zahlende Kunden. Sie wollen speicherunterst\"utzte Quantennetzwerke experimentell validieren und beschaffen daf\"ur ab 2027/2028 Komponenten und Knoten. Erst darauf bauen die gr\"o\ss eren, langsameren M\"arkte (Telekom, \"offentliche Sicherheit, verteiltes Quantencomputing) auf.
+
+Den adressierbaren Erstmarkt beziffern wir bottom-up. In Europa z\"ahlen wir rund 70 bis 100 relevante Labore in Quantenoptik, Quantenkommunikation und Festk\"orper-Qubits. Bei einem anf\"anglichen Komponenten-Beschaffungsvolumen von 50 bis 250 k\texteuro je Labor ergibt sich allein hier ein erreichbares Erstmarktvolumen im mittleren zweistelligen Millionenbereich.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.18\textwidth} X X X X}
+\toprule
+Kundengruppe & Kriterien & Erwarteter Beitrag in Phase I \\
+\midrule
+A-Kunden & passende Kryo-/Optik-Infrastruktur, aktiver Netzwerk-Use-Case, Budget- oder F\"ordermitteln\"ahe, direkter Kontakt & Interviews, technische Spezifikation, LOI oder Design-Partner-Gespr\"ach \\
+B-Kunden & technische Passung und strategisches Interesse, aber Budget oder Timing noch unklar & Anforderungen validieren, Beschaffungspfad verstehen, sp\"atere Pilotpipeline aufbauen \\
+C-Kunden & langfristig strategisch relevant, aber kein kurzfristiger K\"aufer & Roadmap-Feedback, Referenz f\"ur sp\"atere Infrastruktur- und Telekommunikationsm\"arkte \\
+\bottomrule
+\end{tabularx}
+\caption{Segmentierung des Erstmarkts}
+\end{table}
+
+\subsection{Kundennutzen und Wettbewerb}
+Das Kundenproblem hat zwei Seiten. Wirtschaftlich-strategisch ist es die Vorbereitung auf den Q-Day; technisch ist es die Unf\"ahigkeit, Quantensysteme \"uber einen einzelnen K\"uhler hinaus zu skalieren, bedingt durch Verdrahtungsengp\"asse und fehlende optische Schnittstellen. Unser Kundennutzen setzt dort an. Zun\"achst erhalten Forschungskunden ein integrationsf\"ahiges Pilot-QNPU-Modul statt einer selbst aufgebauten Sammlung von Laborkomponenten; nach erfolgreicher Pilotvalidierung folgt der rack-montierte Knoten mit Quantenspeicher, programmierbaren Qubits und Netzwerksoftware-Schnittstelle.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.18\textwidth} X X X X}
+\toprule
+Kaufkriterium & QNPU & Eigenbau im Labor & QKD-Systemhaus \\
+\midrule
+Time-to-experiment & mittel bis hoch, sobald Pilotmodul spezifiziert ist & niedrig bis mittel & hoch f\"ur QKD, niedrig f\"ur speicherunterst\"utzte Netzwerke \\
+Speicherunterst\"utzung & ja, Kern des Produkts & abh\"angig vom Laboraufbau & meist nein \\
+Integrationsaufwand & mittel, mit definierter Schnittstelle und Support & hoch, viele Einzelkomponenten & niedrig f\"ur Standard-QKD, aber funktional begrenzt \\
+\bottomrule
+\end{tabularx}
+\caption{Wettbewerbs- und Kaufkriterien}
+\end{table}
+
+\subsection{Markteintritt}
+Unser Markteintritt setzt auf Glaubw\"urdigkeit, Entwicklungspartnerschaften und Leuchtturmkunden statt auf breiten Mengenvertrieb. Der vertriebliche Fokus liegt in der 24-monatigen EXIST-Phase I auf der Validierung des Proof of Concepts im engen Austausch mit k\"unftigen Anwendern. Dieser Pfad gliedert sich in vier Abschnitte.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.12\textwidth} X X X}
+\toprule
+Phase & Zeitraum & Ziel & Hauptaktivit\"aten \\
+\midrule
+1 & Monat 0 bis 6 & Marktevaluation und Partner-Pipeline & White Paper, Produkt-Roadmap, 10 bis 20 Kundeninterviews \\
+2 & Monat 6 bis 12 & Anforderungen sch\"arfen und LOIs sichern & Evaluierung der Kundenspezifikationen und Anwendungsfall-Definition \\
+3 & Monat 12 bis 18 & PoC-Demonstration im Labor & Technologische Validierung im Stuttgarter Labor \\
+4 & Monat 18 bis 24 & Vorbereitung der Phase II & Businessplan finalisieren und Anschlussfinanzierung sichern \\
+\bottomrule
+\end{tabularx}
+\caption{Markteintrittsphasen}
+\end{table}
+
+\section{Unternehmensplanung}
+\subsection{Gesch\"aftsmodell inkl. geplantem Preismodell}
+Wir verfolgen ein hybrides Gesch\"aftsmodell aus Hardwareverkauf, bezahlten Pilotprojekten, Service-Vertr\"agen, Software-Zugang und strategischer Co-Entwicklung. Die strategische Kernbotschaft ist der Aufbau der speicherbasierten Knotenebene k\"unftiger Quantennetze, w\"ahrend der kommerzielle Einstieg \"uber ein Pilot-QNPU-Modul f\"ur technisch versierte Erstkunden erfolgt.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.24\textwidth} X X}
+\toprule
+Produkt / Leistung & Geplante Preisspanne & Hinweis \\
+\midrule
+QNPU Developer Program & 25.000 bis 100.000 \texteuro pro Jahr & Simulator, API-Zugang, Roadmap-Workshops \\
+Enabling-Komponenten & 10.000 bis 50.000 \texteuro je Einheit & Diamantchips, photonische Koppelelemente, MW-/RF-Strukturen \\
+Pilot-QNPU-Modul & 300.000 bis 800.000 \texteuro & Register-/Schnittstellenmodul f\"ur ausgew\"ahlte Kunden \\
+Strategic Co-Development & 1.000.000 bis 5.000.000 \texteuro & Upside-Szenario, nicht Grundlage des Basisszenarios \\
+\bottomrule
+\end{tabularx}
+\caption{Geplante Preisspanne ausgew\"ahlter Leistungen}
+\end{table}
+
+\subsection{Finanzplanung}
+Vorab ist zwischen zwei Ebenen zu unterscheiden. Die EXIST-F\"orderphase finanziert die Forschungs- und Entwicklungsarbeit bis zum Proof of Concept. Die hier dargestellte Unternehmensplanung beginnt mit der Gr\"undung und beschreibt den anschlie\ss enden, venture-finanzierten Hochlauf. Die zentrale Annahme lautet, dass das erste kommerzielle Versprechen nicht sofort der serienreife 3-Qubit-Rack-Knoten ist, sondern ein Pilot-QNPU-Modul samt Integrationssupport f\"ur Forschungskunden und Testbed-Betreiber.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{0.22\textwidth} X X X X X}
+\toprule
+Erl\"osquelle & Jahr 1 & Jahr 2 \\
+\midrule
+Developer Program & 0,05 bis 0,25 Mio. \texteuro & 0,15 bis 0,5 Mio. \texteuro \\
+Bezahlte Pilotprojekte & 0,3 bis 1,5 Mio. \texteuro & 1,5 bis 5,0 Mio. \texteuro \\
+Pilotmodule / Hardware & 0 bis 0,3 Mio. \texteuro & 0,5 bis 2,0 Mio. \texteuro \\
+Service-Vertr\"age & 0 bis 0,1 Mio. \texteuro & 0,15 bis 0,75 Mio. \texteuro \\
+\bottomrule
+\end{tabularx}
+\caption{Indikative Umsatzplanung nach Gr\"undung}
+\end{table}
+
+Der indikative Kostenplan lautet wie folgt. Personal, Laborausstattung und Prototypen, Komponenten und Fertigung, externes Engineering und Packaging sowie Vertrieb und Marketing bilden die gro\ss en Bl\"ocke der kurzfristigen Ausgaben. Die Seed-Spanne h\"angt vom erreichten De-Risking ab. Eine kleinere Runde von 4 bis 6 Mio. \texteuro ist plausibel, wenn ein Pilotmodul, ein belastbarer IP-Pfad und erste LOIs vorliegen. Eine Runde von 7 bis 9 Mio. \texteuro setzt zus\"atzlich externe FTO-Validierung, reproduzierbare Modulherstellung und erste Design-Partner mit Budgetlogik voraus.
+
+\section{Unternehmensorganisation}
+F\"ur die Ausgr\"undung ist die Gr\"undung einer GmbH vorgesehen. Der Sitz soll in Stuttgart liegen, um die N\"ahe zur Universit\"at Stuttgart, zu ZAQuant sowie zu Cleanroom-, Kryo-, Photonik- und Transferinfrastruktur zu sichern.
+
+Die operative Organisation folgt den vier Kernverantwortungen des Gr\"undungsteams. Sreehari Jayaram verantwortet Fabrikation und Systemintegration, Vladislav Bushmakin Quantenoptik und Spin-Photon-Schnittstelle, Dr. Ioannis Karapatzakis Mikrowellen-/RF-, Kryo- und Engineering-Themen und Christian Hug Gesch\"aftsf\"uhrung, Businessplanung, IP-/Lizenzkoordination, Finanzierung und kommerzielle Partnerschaften.
+
+\begin{figure}[ht]
+  \centering
+  \fbox{\parbox[c][4cm][c]{0.8\textwidth}{\centering Platzhalter f\"ur Abbildung: Organigramm\\[0.3em] organigramm.svg}}
+  \caption{Organisationsstruktur der geplanten GmbH}
+\end{figure}
+
+\section*{Quellen und Referenzen}
+\begin{itemize}
+  \item I. Karapatzakis et al., Physical Review X 14, 031036 (2024).
+  \item J. Resch, I. Karapatzakis et al., Physical Review X 16, 011060 (2026).
+  \item V. Bushmakin et al., Zwei-Photonen-Interferenz von Photonen entfernter SnV-Zentren in Diamant, arXiv:2412.17539.
+  \item M. Pompili et al., Science 372, 259 (2021).
+  \item S. L. N. Hermans et al., Nature 605, 663 (2022).
+  \item F. Lecocq et al., Nature 591, 575 (2021).
+  \item McKinsey, Quantum Technology Monitor 2025.
+\end{itemize}
+
+\section*{Anhang A: Proof of Principle}
+Messdaten, Koh\"arenzkurven, Fabrikationsbilder, Zwei-Photonen-Interferenz-Daten und Stark-Tuning-Daten.
+
+\section*{Anhang B: Unterst\"utzungsschreiben / LOIs}
+Absichtserkl\"arungen von Pilotkunden und Partnern sowie Technologietransfer der Universit\"at Stuttgart.
+
+\end{document}

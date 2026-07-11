@@ -1,0 +1,25 @@
+\babel@toc {ngerman}{}\relax 
+\contentsline {section}{\numberline {1}Zusammenfassung}{3}{section.1}%
+\contentsline {section}{\numberline {2}Gesch\"aftsidee}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Ausgangsproblem / Bedarf}{4}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}L\"osungsidee}{4}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Zielkunden und Anwendungsszenarien}{4}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Wertversprechen / Kundennutzen}{5}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}Kommerzialisierungsidee}{5}{subsection.2.5}%
+\contentsline {subsection}{\numberline {2.6}Vision der Gr\"undung und Investitionsperspektive}{5}{subsection.2.6}%
+\contentsline {section}{\numberline {3}Team}{5}{section.3}%
+\contentsline {section}{\numberline {4}Innovationsvorhaben}{6}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Gr\"undungsvorgeschichte und Entwicklungsstand}{6}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Innovation}{7}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}IP-Situation}{8}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}FuE-Konzept}{8}{subsection.4.4}%
+\contentsline {section}{\numberline {5}Nachhaltigkeit}{9}{section.5}%
+\contentsline {section}{\numberline {6}Markt und Wettbewerb}{9}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Marktsituation}{9}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Kundennutzen und Wettbewerb}{10}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Markteintritt}{10}{subsection.6.3}%
+\contentsline {section}{\numberline {7}Unternehmensplanung}{11}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Gesch\"aftsmodell inkl. geplantem Preismodell}{11}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Finanzplanung}{11}{subsection.7.2}%
+\contentsline {section}{\numberline {8}Unternehmensorganisation}{12}{section.8}%
+\providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 
