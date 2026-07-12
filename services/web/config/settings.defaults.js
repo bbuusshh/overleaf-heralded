@@ -119,6 +119,8 @@ const safeCompilers = ['xelatex', 'pdflatex', 'latex', 'lualatex']
 
 module.exports = {
   env: 'server-ce',
+  enableGitBridge: process.env.GIT_BRIDGE_ENABLED === 'true',
+  gitBridgePublicBaseUrl: process.env.GIT_BRIDGE_PUBLIC_BASE_URL || 'http://localhost:8001',
 
   limits: {
     httpGlobalAgentMaxSockets: 300,
@@ -429,6 +431,7 @@ module.exports = {
     compileGroup: 'standard',
     references: true,
     trackChanges: true,
+    personalAccessTokens: true,
   }),
 
   // featuresEpoch: 'YYYY-MM-DD',
@@ -1098,7 +1101,7 @@ module.exports = {
         '../modules/full-project-search/frontend/js/components/full-project-search.tsx'
       ),
     ],
-    integrationPanelComponents: [],
+    integrationPanelComponents: ['../git-bridge/GitBridgePanel'],
     referenceSearchSetting: [],
     settingsModalEditorTabSections: [],
     settingsModalSpellcheckSections: [],

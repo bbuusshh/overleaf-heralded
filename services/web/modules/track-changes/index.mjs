@@ -5,77 +5,89 @@ import AsyncLocalStorage from '../../app/src/infrastructure/AsyncLocalStorage.mj
 import ProjectEditorHandler from '../../app/src/Features/Project/ProjectEditorHandler.mjs'
 import Settings from '@overleaf/settings'
 
-function apply(webRouter, privateApiRouter) {
-  console.log('======= TRACK CHANGES MODULE LOADED =======')
-  ProjectEditorHandler.trackChangesAvailable = true
-  Settings.enableGitBridge = true
-  
-  const originalBuild = ProjectEditorHandler.buildProjectModelView
-  ProjectEditorHandler.buildProjectModelView = function(...args) {
-    const result = originalBuild.apply(this, args)
-    if (result && result.features) {
-      result.features.trackChanges = true
-      result.features.trackChangesVisible = true
-      result.features.gitBridge = true
-      result.features.github = true
+const router = {
+  apply: function (webRouter, privateApiRouter, publicApiRouter) {
+    console.log('======= TRACK CHANGES MODULE LOADED =======')
+    ProjectEditorHandler.trackChangesAvailable = true
+    Settings.enableGitBridge = true
+    
+    const originalBuild = ProjectEditorHandler.buildProjectModelView
+    ProjectEditorHandler.buildProjectModelView = function(...args) {
+      const result = originalBuild.apply(this, args)
+      if (result && result.features) {
+        result.features.trackChanges = true
+        result.features.trackChangesVisible = true
+        result.features.gitBridge = true
+        result.features.github = true
+      }
+      return result
     }
-    return result
-  }
 
-  webRouter.get(
-    '/project/:project_id/threads',
-    AsyncLocalStorage.middleware,
-    AuthorizationMiddleware.ensureUserCanReadProject,
-    TrackChangesController.getThreads
-  )
-  
-  webRouter.post(
-    '/project/:project_id/thread/:thread_id/messages',
-    AsyncLocalStorage.middleware,
-    AuthorizationMiddleware.ensureUserCanWriteOrReviewProjectContent,
-    TrackChangesController.addMessage
-  )
-  
-  webRouter.post(
-    '/project/:project_id/doc/:doc_id/thread/:thread_id/resolve',
-    AsyncLocalStorage.middleware,
-    AuthorizationMiddleware.ensureUserCanWriteOrReviewProjectContent,
-    TrackChangesController.resolveThread
-  )
-  
-  webRouter.post(
-    '/project/:project_id/doc/:doc_id/thread/:thread_id/reopen',
-    AsyncLocalStorage.middleware,
-    AuthorizationMiddleware.ensureUserCanWriteOrReviewProjectContent,
-    TrackChangesController.reopenThread
-  )
-  
-  webRouter.delete(
-    '/project/:project_id/doc/:doc_id/thread/:thread_id',
-    AsyncLocalStorage.middleware,
-    AuthorizationMiddleware.ensureUserCanWriteOrReviewProjectContent,
-    TrackChangesController.deleteThread
-  )
-  
-  webRouter.post(
-    '/project/:project_id/thread/:thread_id/messages/:message_id/edit',
-    AsyncLocalStorage.middleware,
-    AuthorizationMiddleware.ensureUserCanWriteOrReviewProjectContent,
-    TrackChangesController.editMessage
-  )
-  
-  webRouter.delete(
-    '/project/:project_id/thread/:thread_id/messages/:message_id',
-    AsyncLocalStorage.middleware,
-    AuthorizationMiddleware.ensureUserCanWriteOrReviewProjectContent,
-    TrackChangesController.deleteMessage
-  )
-  
-  webRouter.delete(
-    '/project/:project_id/thread/:thread_id/own-messages/:message_id',
-    AsyncLocalStorage.middleware,
-    AuthorizationMiddleware.ensureUserCanWriteOrReviewProjectContent,
-    TrackChangesController.deleteUserMessage
-  )
+    publicApiRouter.get('/debug-features', async (req, res) => {
+      const { default: Features } = await import('../../app/src/infrastructure/Features.mjs')
+      res.json({
+        trackChangesAvailable: ProjectEditorHandler.trackChangesAvailable,
+        enableGitBridge: Settings.enableGitBridge,
+        hasGitBridge: Features.hasFeature ? Features.hasFeature('git-bridge') : null
+      })
+    })
+
+    webRouter.get(
+      '/project/:project_id/threads',
+      AsyncLocalStorage.middleware,
+      AuthorizationMiddleware.ensureUserCanReadProject,
+      TrackChangesController.getThreads
+    )
+    
+    webRouter.post(
+      '/project/:project_id/thread/:thread_id/messages',
+      AsyncLocalStorage.middleware,
+      AuthorizationMiddleware.ensureUserCanWriteOrReviewProjectContent,
+      TrackChangesController.addMessage
+    )
+    
+    webRouter.post(
+      '/project/:project_id/doc/:doc_id/thread/:thread_id/resolve',
+      AsyncLocalStorage.middleware,
+      AuthorizationMiddleware.ensureUserCanWriteOrReviewProjectContent,
+      TrackChangesController.resolveThread
+    )
+    
+    webRouter.post(
+      '/project/:project_id/doc/:doc_id/thread/:thread_id/reopen',
+      AsyncLocalStorage.middleware,
+      AuthorizationMiddleware.ensureUserCanWriteOrReviewProjectContent,
+      TrackChangesController.reopenThread
+    )
+    
+    webRouter.delete(
+      '/project/:project_id/doc/:doc_id/thread/:thread_id',
+      AsyncLocalStorage.middleware,
+      AuthorizationMiddleware.ensureUserCanWriteOrReviewProjectContent,
+      TrackChangesController.deleteThread
+    )
+    
+    webRouter.post(
+      '/project/:project_id/thread/:thread_id/messages/:message_id/edit',
+      AsyncLocalStorage.middleware,
+      AuthorizationMiddleware.ensureUserCanWriteOrReviewProjectContent,
+      TrackChangesController.editMessage
+    )
+    
+    webRouter.delete(
+      '/project/:project_id/thread/:thread_id/messages/:message_id',
+      AsyncLocalStorage.middleware,
+      AuthorizationMiddleware.ensureUserCanWriteOrReviewProjectContent,
+      TrackChangesController.deleteMessage
+    )
+    
+    webRouter.delete(
+      '/project/:project_id/thread/:thread_id/own-messages/:message_id',
+      AsyncLocalStorage.middleware,
+      AuthorizationMiddleware.ensureUserCanWriteOrReviewProjectContent,
+      TrackChangesController.deleteUserMessage
+    )
+  }
 }
-export default { apply }
+
+export default { router }
