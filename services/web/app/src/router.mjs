@@ -28,6 +28,7 @@ import CompileManager from './Features/Compile/CompileManager.mjs'
 import CompileController from './Features/Compile/CompileController.mjs'
 import HealthCheckController from './Features/HealthCheck/HealthCheckController.mjs'
 import ProjectDownloadsController from './Features/Downloads/ProjectDownloadsController.mjs'
+import * as CustomGitSyncController from './Features/GitSync/CustomGitSyncController.mjs'
 import FileStoreController from './Features/FileStore/FileStoreController.mjs'
 import DocumentUpdaterController from './Features/DocumentUpdater/DocumentUpdaterController.mjs'
 import HistoryRouter from './Features/History/HistoryRouter.mjs'
@@ -781,6 +782,20 @@ async function initialize(webRouter, privateApiRouter, publicApiRouter) {
     }),
     AuthorizationMiddleware.ensureUserCanReadProject,
     ProjectDownloadsController.downloadProject
+  )
+  
+  webRouter.post(
+    '/project/:Project_id/custom-git-push',
+    AuthenticationController.requireLogin(),
+    AuthorizationMiddleware.ensureUserCanWriteProjectContent,
+    CustomGitSyncController.pushToGit
+  )
+  
+  webRouter.post(
+    '/project/:Project_id/custom-git-pull',
+    AuthenticationController.requireLogin(),
+    AuthorizationMiddleware.ensureUserCanWriteProjectContent,
+    CustomGitSyncController.pullFromGit
   )
   webRouter.get(
     '/project/download/zip',

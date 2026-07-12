@@ -22,7 +22,8 @@ import { isSplitTestEnabled } from '@/utils/splitTestUtils'
 import { useDetachCompileContext as useCompileContext } from '@/shared/context/detach-compile-context'
 import { useProjectSettingsContext } from '@/features/editor-left-menu/context/project-settings-context'
 import getMeta from '@/utils/meta'
-import EditorCloneProjectModalWrapper from '@/features/clone-project-modal/components/editor-clone-project-modal-wrapper'
+import CloneProjectModal from '@/features/clone-project-modal/components/clone-project-modal'
+import GitSyncModal from '@/features/git-bridge/GitSyncModal'
 import useOpenProject from '@/shared/hooks/use-open-project'
 import importOverleafModules from '../../../../../macros/import-overleaf-module.macro'
 import { useFeatureFlag } from '@/shared/context/split-test-context'
@@ -46,6 +47,7 @@ export const ToolbarMenuBar = () => {
   const wordCountEnabled = pdfUrl || isSplitTestEnabled('word-count-client')
   const [showWordCountModal, setShowWordCountModal] = useState(false)
   const [showCloneProjectModal, setShowCloneProjectModal] = useState(false)
+  const [showGitSyncModal, setShowGitSyncModal] = useState(false)
   const openProject = useOpenProject()
 
   const anonymous = getMeta('ol-anonymous')
@@ -82,6 +84,15 @@ export const ToolbarMenuBar = () => {
         },
         id: 'copy_project',
       },
+      {
+        type: 'command',
+        label: 'Sync to Git',
+        disabled: anonymous,
+        handler: () => {
+          setShowGitSyncModal(true)
+        },
+        id: 'sync_to_git',
+      },
     ],
     [t, setView, view, wordCountEnabled, anonymous]
   )
@@ -89,7 +100,7 @@ export const ToolbarMenuBar = () => {
     () => [
       {
         id: 'file-file-tree',
-        children: ['new_file', 'new_folder', 'upload_file', 'copy_project'],
+        children: ['new_file', 'new_folder', 'upload_file', 'copy_project', 'sync_to_git'],
       },
       { id: 'file-tools', children: ['show_version_history', 'word_count'] },
       { id: 'submit', children: ['submit-project', 'manage-template'] },
@@ -343,12 +354,19 @@ export const ToolbarMenuBar = () => {
         show={showWordCountModal}
         handleHide={() => setShowWordCountModal(false)}
       />
-      <EditorCloneProjectModalWrapper
-        show={showCloneProjectModal}
-        handleHide={() => setShowCloneProjectModal(false)}
-        openProject={openProject}
-      />
-      {menubarExtraComponents.map(
+      {showCloneProjectModal && (
+        <CloneProjectModal
+          show={showCloneProjectModal}
+          handleHide={() => setShowCloneProjectModal(false)}
+          handleAfterCloned={openProject}
+        />
+      )}
+      {showGitSyncModal && (
+        <GitSyncModal
+          show={showGitSyncModal}
+          handleHide={() => setShowGitSyncModal(false)}
+        />
+      )}{menubarExtraComponents.map(
         ({ import: { default: Component } }, index) => (
           <Component key={index} />
         )
