@@ -7,6 +7,9 @@ import ProjectZipStreamManager from '../Downloads/ProjectZipStreamManager.mjs'
 import FileSystemImportManager from '../Uploads/FileSystemImportManager.mjs'
 import ProjectGetter from '../Project/ProjectGetter.mjs'
 import SessionManager from '../Authentication/SessionManager.mjs'
+import ChatApiHandler from '../Chat/ChatApiHandler.mjs'
+import ProjectEntityHandler from '../Project/ProjectEntityHandler.mjs'
+import UserGetter from '../User/UserGetter.mjs'
 
 const execAsync = promisify(exec)
 const GIT_SYNC_DIR = '/var/lib/overleaf/data/custom-git-sync'
@@ -67,6 +70,98 @@ async function createZipFile(projectId, historyId, outputPath) {
   })
 }
 
+async function exportComments(projectId, exportPath) {
+  try {
+    const docs = await ProjectEntityHandler.promises.getAllDocs(projectId)
+    const threads = await ChatApiHandler.promises.getThreads(projectId)
+    const resolvedThreadIds = await ChatApiHandler.promises.getResolvedThreadIds(projectId)
+    
+    const resolvedThreadSet = new Set(resolvedThreadIds)
+
+    // Collect all unique user IDs to fetch them at once
+    const userIds = new Set()
+    for (const threadId of Object.keys(threads || {})) {
+      const messages = threads[threadId].messages || []
+      for (const msg of messages) {
+        if (msg.user_id) userIds.add(msg.user_id)
+      }
+    }
+
+    const userEmails = {}
+    for (const userId of userIds) {
+      try {
+        const user = await UserGetter.promises.getUser(userId, { email: 1 })
+        if (user && user.email) {
+          userEmails[userId] = user.email
+        }
+      } catch (e) {
+        console.warn('Error fetching user', userId, e)
+      }
+    }
+
+    const exportedComments = []
+
+    for (const docPath of Object.keys(docs)) {
+      const doc = docs[docPath]
+      const { lines, ranges } = await ProjectEntityHandler.promises.getDoc(projectId, doc._id)
+      
+      if (!ranges || !ranges.comments || ranges.comments.length === 0) continue
+
+      // We need to map character positions to lines
+      // Create an array of cumulative character counts for each line
+      const lineLengths = lines.map(l => l.length + 1) // +1 for the newline character
+      
+      for (const comment of ranges.comments) {
+        const pos = comment.op.p
+        let currentPos = 0
+        let lineNumber = 1
+        
+        for (const len of lineLengths) {
+          if (currentPos + len > pos) {
+            break
+          }
+          currentPos += len
+          lineNumber++
+        }
+
+        const threadIdStr = comment.op.t.toString()
+        const thread = threads[threadIdStr]
+        const messages = []
+
+        if (thread && thread.messages) {
+          for (const msg of thread.messages) {
+            messages.push({
+              author: userEmails[msg.user_id] || msg.user_id,
+              content: msg.content,
+              timestamp: msg.timestamp
+            })
+          }
+        }
+
+        exportedComments.push({
+          file: docPath.replace(/^\//, ''), // remove leading slash
+          line: lineNumber,
+          highlightedText: comment.op.c,
+          threadId: threadIdStr,
+          resolved: resolvedThreadSet.has(threadIdStr),
+          messages
+        })
+      }
+    }
+
+    const exportData = {
+      exportedAt: new Date().toISOString(),
+      projectId,
+      comments: exportedComments
+    }
+
+    await fs.promises.writeFile(exportPath, JSON.stringify(exportData, null, 2))
+    console.log(`[GIT PUSH] Exported ${exportedComments.length} comments to ${exportPath}`)
+  } catch (err) {
+    console.error(`[GIT PUSH] Error exporting comments for ${projectId}:`, err)
+  }
+}
+
 export async function pushToGit(req, res, next) {
     try {
       const projectId = req.params.Project_id
@@ -92,6 +187,9 @@ export async function pushToGit(req, res, next) {
       // Delete everything except .git
       await execAsyncLogged(`find ${projectDir} -mindepth 1 -not -regex "^${projectDir}/\\.git.*" -delete`)
       await execAsyncLogged(`unzip -o ${zipPath} -d ${projectDir}`)
+
+      // Export comments to .overleaf-comments.json
+      await exportComments(projectId, path.join(projectDir, '.overleaf-comments.json'))
 
       // Commit and push
       await execAsyncLogged(`git -C ${projectDir} add .`)
