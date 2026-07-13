@@ -152,8 +152,19 @@ export async function pullFromGit(req, res, next) {
       await execAsyncLogged(`cp -r ${projectDir} ${tempSyncDir}`)
       await execAsyncLogged(`rm -rf ${tempSyncDir}/.git`)
 
-      // This will recursively add all files
-      await FileSystemImportManager.addFolderContents(userId, projectId, rootFolderId, tempSyncDir, true)
+      // Iterate over directory entries and add each via the exported addEntity API
+      const entries = await fs.promises.readdir(tempSyncDir)
+      console.log(`[GIT PULL] Syncing ${entries.length} entries to Overleaf project ${projectId}`)
+      for (const entry of entries) {
+        if (entry.startsWith('.')) continue // skip hidden files
+        const entryPath = path.join(tempSyncDir, entry)
+        try {
+          await FileSystemImportManager.promises.addEntity(userId, projectId, rootFolderId, entry, entryPath, true)
+          console.log(`[GIT PULL] Successfully synced: ${entry}`)
+        } catch (entityErr) {
+          console.error(`[GIT PULL] Error syncing entity ${entry}:`, entityErr.message)
+        }
+      }
 
       await execAsyncLogged(`rm -rf ${tempSyncDir}`)
 
