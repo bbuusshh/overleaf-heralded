@@ -10,6 +10,7 @@ import SessionManager from '../Authentication/SessionManager.mjs'
 import ChatApiHandler from '../Chat/ChatApiHandler.mjs'
 import ProjectEntityHandler from '../Project/ProjectEntityHandler.mjs'
 import UserGetter from '../User/UserGetter.mjs'
+import EditorController from '../Editor/EditorController.mjs'
 
 const execAsync = promisify(exec)
 const GIT_SYNC_DIR = '/var/lib/overleaf/data/custom-git-sync'
@@ -162,11 +163,54 @@ async function exportComments(projectId, exportPath) {
   }
 }
 
+async function syncDirectoryRecursively(userId, projectId, currentFolderId, localDirPath, projectTreeFolder) {
+  const entries = await fs.promises.readdir(localDirPath)
+  for (const entry of entries) {
+    if (entry.startsWith('.')) continue
+    const entryPath = path.join(localDirPath, entry)
+    const stat = await fs.promises.lstat(entryPath)
+    
+    if (stat.isDirectory()) {
+      // Find existing folder in projectTreeFolder
+      let nextFolderId = null
+      let nextTreeFolder = null
+      
+      const existingFolder = (projectTreeFolder.folders || []).find(f => f.name === entry)
+      if (existingFolder) {
+        nextFolderId = existingFolder._id
+        nextTreeFolder = existingFolder
+      } else {
+        // Create it
+        const newFolder = await EditorController.promises.addFolder(
+          projectId,
+          currentFolderId,
+          entry,
+          'upload',
+          userId
+        )
+        nextFolderId = newFolder._id
+        nextTreeFolder = { _id: nextFolderId, name: entry, folders: [], docs: [], fileRefs: [] }
+      }
+      
+      await syncDirectoryRecursively(userId, projectId, nextFolderId, entryPath, nextTreeFolder)
+    } else if (stat.isFile()) {
+      try {
+        await FileSystemImportManager.promises.addEntity(userId, projectId, currentFolderId, entry, entryPath, true)
+        console.log(`[GIT PULL] Successfully synced file: ${entryPath}`)
+      } catch (entityErr) {
+        console.error(`[GIT PULL] Error syncing file ${entryPath}:`, entityErr.message)
+      }
+    }
+  }
+}
+
 export async function pushToGit(req, res, next) {
     try {
       const projectId = req.params.Project_id
-      const { remoteUrl, token } = req.body
+      const { remoteUrl, token, branch: reqBranch } = req.body
       if (!remoteUrl || !token) return res.status(400).send('Missing URL or token')
+      
+      const branch = reqBranch || 'main'
 
       const projectDir = path.join(GIT_SYNC_DIR, projectId)
       const zipPath = path.join('/tmp', `git-sync-${projectId}.zip`)
@@ -180,7 +224,14 @@ export async function pushToGit(req, res, next) {
       // Initialize git if not present
       const gitDirExists = fs.existsSync(path.join(projectDir, '.git'))
       if (!gitDirExists) {
-        await execAsyncLogged(`git clone ${authUrl} ${projectDir}`)
+        await execAsyncLogged(`git clone -b ${branch} ${authUrl} ${projectDir}`)
+      } else {
+        // Try to checkout the branch if we have an existing repo
+        try {
+          await execAsyncLogged(`git -C ${projectDir} checkout ${branch}`)
+        } catch(e) {
+          await execAsyncLogged(`git -C ${projectDir} checkout -b ${branch}`)
+        }
       }
 
       // Extract zip over the directory (using unzip), keeping .git intact
@@ -200,7 +251,7 @@ export async function pushToGit(req, res, next) {
       }
       
       // push
-      const pushCmd = `git -C ${projectDir} push ${authUrl} HEAD:main`
+      const pushCmd = `git -C ${projectDir} push ${authUrl} HEAD:${branch}`
       await execAsyncLogged(pushCmd)
 
       // Cleanup zip
@@ -217,8 +268,10 @@ export async function pullFromGit(req, res, next) {
     try {
       const userId = SessionManager.getLoggedInUserId(req.session)
       const projectId = req.params.Project_id
-      const { remoteUrl, token } = req.body
+      const { remoteUrl, token, branch: reqBranch } = req.body
       if (!remoteUrl || !token) return res.status(400).send('Missing URL or token')
+
+      const branch = reqBranch || 'main'
 
       const projectDir = path.join(GIT_SYNC_DIR, projectId)
       const authUrl = getAuthUrl(remoteUrl, token)
@@ -228,11 +281,17 @@ export async function pullFromGit(req, res, next) {
       // Clone if needed
       const gitDirExists = fs.existsSync(path.join(projectDir, '.git'))
       if (!gitDirExists) {
-        await execAsyncLogged(`git clone ${authUrl} ${projectDir}`)
+        await execAsyncLogged(`git clone -b ${branch} ${authUrl} ${projectDir}`)
       } else {
         // Fetch and merge
         try {
-          await execAsyncLogged(`git -C ${projectDir} pull ${authUrl} main`)
+          await execAsyncLogged(`git -C ${projectDir} checkout ${branch}`)
+        } catch(e) {
+          await execAsyncLogged(`git -C ${projectDir} checkout -b ${branch}`)
+        }
+        
+        try {
+          await execAsyncLogged(`git -C ${projectDir} pull ${authUrl} ${branch}`)
         } catch(e) {
           console.warn("Merge conflicts or errors:", e)
           // we continue, the files with conflict markers will be synced
@@ -250,19 +309,9 @@ export async function pullFromGit(req, res, next) {
       await execAsyncLogged(`cp -r ${projectDir} ${tempSyncDir}`)
       await execAsyncLogged(`rm -rf ${tempSyncDir}/.git`)
 
-      // Iterate over directory entries and add each via the exported addEntity API
-      const entries = await fs.promises.readdir(tempSyncDir)
-      console.log(`[GIT PULL] Syncing ${entries.length} entries to Overleaf project ${projectId}`)
-      for (const entry of entries) {
-        if (entry.startsWith('.')) continue // skip hidden files
-        const entryPath = path.join(tempSyncDir, entry)
-        try {
-          await FileSystemImportManager.promises.addEntity(userId, projectId, rootFolderId, entry, entryPath, true)
-          console.log(`[GIT PULL] Successfully synced: ${entry}`)
-        } catch (entityErr) {
-          console.error(`[GIT PULL] Error syncing entity ${entry}:`, entityErr.message)
-        }
-      }
+      // Recursively sync directories to handle existing folders
+      const rootTreeFolder = project.rootFolder[0]
+      await syncDirectoryRecursively(userId, projectId, rootFolderId, tempSyncDir, rootTreeFolder)
 
       await execAsyncLogged(`rm -rf ${tempSyncDir}`)
 
@@ -271,4 +320,35 @@ export async function pullFromGit(req, res, next) {
       console.error('Error in custom pull from git:', err)
       res.status(500).json({ error: err.message })
     }
+}
+
+export async function getBranches(req, res, next) {
+  try {
+    const { remoteUrl, token } = req.body
+    if (!remoteUrl || !token) return res.status(400).send('Missing URL or token')
+
+    const authUrl = getAuthUrl(remoteUrl, token)
+
+    // Run git ls-remote --heads
+    // This command prints branches in format: <sha> \t refs/heads/<branch>
+    const { stdout } = await execAsyncLogged(`git ls-remote --heads ${authUrl}`)
+    
+    const branches = []
+    if (stdout) {
+      const lines = stdout.trim().split('\n')
+      for (const line of lines) {
+        if (!line) continue
+        const parts = line.split('\t')
+        if (parts.length === 2 && parts[1].startsWith('refs/heads/')) {
+          const branchName = parts[1].replace('refs/heads/', '')
+          branches.push(branchName)
+        }
+      }
+    }
+
+    res.status(200).json({ branches })
+  } catch (err) {
+    console.error('Error fetching git branches:', err)
+    res.status(500).json({ error: err.message })
+  }
 }

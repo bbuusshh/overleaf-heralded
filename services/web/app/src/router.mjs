@@ -797,6 +797,13 @@ async function initialize(webRouter, privateApiRouter, publicApiRouter) {
     AuthorizationMiddleware.ensureUserCanWriteProjectContent,
     CustomGitSyncController.pullFromGit
   )
+  
+  webRouter.post(
+    '/project/:Project_id/custom-git-branches',
+    AuthenticationController.requireLogin(),
+    AuthorizationMiddleware.ensureUserCanWriteProjectContent,
+    CustomGitSyncController.getBranches
+  )
   webRouter.get(
     '/project/download/zip',
     AuthenticationController.requireLogin(),
